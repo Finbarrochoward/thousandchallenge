@@ -31,9 +31,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int counter;
 
+  String langText;
+
+  List <String> languagesStrings = <String>['German', 'Greek', 'French'];
+
+  Map languagesSwitchFalse = {
+    'German': "enToDe",
+    'French': "enToFr",
+  };
+  String currentLang = 'enToDe';
+
+
   void increaseCounter() {
     counter++;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -46,13 +58,16 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: <Widget>[
           DropdownButtonHideUnderline(
             child: DropdownButton<String>(
-              value: "German",
+              value: langText,
               style: TextStyle(color: Colors.black),
               underline: null,
               onChanged: (String newValue) {
-                setState(() {});
+                setState(() {
+                  currentLang = languagesSwitchFalse[newValue];
+                  langText = newValue;
+                });
               },
-              items: <String>['German', 'English', 'Greek', 'French']
+              items: languagesStrings
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -63,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-      body: ForeignWord(),
+      body: ForeignWord(lang: currentLang),
     );
   }
 }
