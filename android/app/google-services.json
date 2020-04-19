@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "630529594258",
+    "firebase_url": "https://thousand-challenge.firebaseio.com",
+    "project_id": "thousand-challenge",
+    "storage_bucket": "thousand-challenge.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630529594258:android:75c72c1fe2a93ad42ba74b",
+        "android_client_info": {
+          "package_name": "com.fhdev.thousandchallenge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "630529594258-7qp6q3fhokp3tfr90lgcpvqsh8jpd5th.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFfKUMG_w-WqR3d-crxIKsjH5kHHVW3io"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "630529594258-7qp6q3fhokp3tfr90lgcpvqsh8jpd5th.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "630529594258-1ssuu78v9u0k54r7nqtsehmlnp6497qq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fhdev.thousandchallenge"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

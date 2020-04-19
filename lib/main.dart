@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import './assets/foreignword.dart';
+// import 'package:firebase_admob/firebase_admob.dart';
+
+// const String testDevice = "Mobile Id";
 
 void main() {
   runApp(MyApp());
@@ -28,12 +31,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
+  // static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+  //   testDevices: testDevice != null ? <String>[testDevice] : null,
+  //   nonPersonalizedAds: true,
+  //   keywords: <String>["language", "learning", "education", "languages",]
+  // );
+  // BannerAd _bannerAd;
+  // BannerAd createBannerAd() {
+  //   return BannerAd(
+  //     adUnitId: BannerAd.testAdUnitId,
+  //     size: AdSize.banner,
+  //     targetingInfo: targetingInfo,
+  //     listener: (MobileAdEvent event) {
+  //       print("BannerAd $event");
+  //     }
+  //   );
+  // }
   int counter;
 
   String langText;
 
-  List <String> languagesStrings = <String>['German', 'Greek', 'French'];
+  List<String> languagesStrings = <String>['German', 'Greek', 'French'];
 
   Map languagesSwitchFalse = {
     'German': "enToDe",
@@ -41,11 +59,22 @@ class _MyHomePageState extends State<MyHomePage> {
   };
   String currentLang = 'enToDe';
 
-
   void increaseCounter() {
     counter++;
   }
 
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   FirebaseAdMob.instance.initialize(appId: BannerAd.testAdUnitId);
+  //   _bannerAd = createBannerAd()..load()..show();
+  // }
+
+  // @override
+  // void dispose() {
+  //   // TODO: implement dispose
+  //   _bannerAd.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +83,10 @@ class _MyHomePageState extends State<MyHomePage> {
         elevation: 0,
         backgroundColor: Colors.white,
         title: Text(widget.title),
-        leading: IconButton(onPressed: () {}, icon: Icon(Icons.compare_arrows),),
+        leading: IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.compare_arrows),
+        ),
         actions: <Widget>[
           DropdownButtonHideUnderline(
             child: DropdownButton<String>(

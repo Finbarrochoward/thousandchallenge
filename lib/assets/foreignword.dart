@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './languagedicts.dart';
 import 'dart:math';
+import 'dart:async';
 
 int generateRandom(length) {
   Random random = Random();
@@ -18,23 +19,29 @@ class ForeignWord extends StatefulWidget {
 
 class _ForeignWordState extends State<ForeignWord>
     with SingleTickerProviderStateMixin {
-  Animation<Color> animation;
-  AnimationController controller;
+  // Animation<Color> animation;
+  // AnimationController controller;
+  // StreamController<String> streamCont = StreamController<String>.broadcast();
+  // StreamSubscription sub;
 
-  @override
-  void initState() {
-    super.initState();
-    controller =
-        AnimationController(duration: const Duration(seconds: 2), vsync: this);
-    animation =
-        ColorTween(begin: Colors.green, end: Colors.orange).animate(controller)
-          ..addListener(() {
-            setState(() {
-              // The state that has changed here is the animation object’s value.
-            });
-          });
-    controller.forward();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   controller =
+  //       AnimationController(duration: const Duration(seconds: 2), vsync: this);
+  //   animation =
+  //       ColorTween(begin: Colors.green, end: Colors.orange).animate(controller)
+  //         ..addListener(() {
+  //           Stream stream = streamCont.stream;
+  //           stream.listen((value) {
+  //             print(value);
+  //           });
+  //           // setState(() {
+  //           // The state that has changed here is the animation object’s value.
+  //           // });
+  //         });
+  //   controller.forward();
+  // }
 
   final Map langDicts = {
     "enToDe": englishToGerman,
@@ -42,11 +49,13 @@ class _ForeignWordState extends State<ForeignWord>
     "enToFr": englishToFrench
   };
 
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   controller.dispose();
+  //   super.dispose();
+  // }
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -54,30 +63,13 @@ class _ForeignWordState extends State<ForeignWord>
     var currLangList = currLang.keys.toList();
     var invisWord = currLangList[generateRandom(currLangList.length)];
     var visWord = currLang[invisWord];
-
-    void callback(isCorrect) {
-      setState(() {
-        if (isCorrect) {
-          print(visWord);
-          visWord = "Correct";
-          print(visWord);
-          // controller.forward();
-        } else {
-          print("False");
-        }
-      });
-    }
+    String _currWord;
+    bool isCorrect = false;
+    final TextEditingController _textController = TextEditingController();
 
     return Column(
       children: <Widget>[
-        Expanded(
-          child: Container(
-              child:
-                  Center(child: Text(visWord, style: TextStyle(fontSize: 30))),
-              decoration: BoxDecoration(
-                color: animation.value,
-              )),
-        ),
+        VisWordBox(word: visWord),
         Expanded(
           child: Container(
             decoration: BoxDecoration(
@@ -86,8 +78,51 @@ class _ForeignWordState extends State<ForeignWord>
             child: Center(
               child: Padding(
                   padding: const EdgeInsets.only(left: 50.0, right: 50.0),
-                  child: ValidationForm(
-                      correctWord: invisWord, callback: callback)),
+                  child: Form(
+                      key: _formKey,
+                      child: Row(children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _textController,
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return "Please enter a word";
+                              } else {
+                                _currWord = value;
+                                return null;
+                              }
+                            },
+                            decoration:
+                                InputDecoration(hintText: "Translation"),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 20),
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            if (_formKey.currentState.validate()) {
+                              if (invisWord == _currWord) {
+                                // streamCont.add("Correct");
+                                isCorrect = true;
+                              } else {
+                                isCorrect = false;
+                              }
+                              setState(() {
+                                _textController.clear();
+                                if (isCorrect) {
+                                  print("correct");
+                                } else {
+                                  print("incorrect");
+                                  visWord = "incorrect";
+                                }
+                              });
+                            }
+                          },
+                          child: Text("Submit"),
+                          elevation: 0,
+                        )
+                      ]))),
             ),
           ),
         ),
@@ -150,5 +185,47 @@ class _ValidationFormState extends State<ValidationForm> {
             elevation: 0,
           )
         ]));
+  }
+}
+
+class VisWordBox extends StatefulWidget {
+  final String word;
+  final bool isCorrect;
+  VisWordBox({this.word, this.isCorrect});
+
+  @override
+  _VisWordBoxState createState() => _VisWordBoxState();
+}
+
+class _VisWordBoxState extends State<VisWordBox>
+    with SingleTickerProviderStateMixin {
+  Animation<Color> animation;
+  AnimationController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller =
+        AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    animation =
+        ColorTween(begin: Colors.orange, end: Colors.green).animate(controller)
+          ..addListener(() {
+            setState(() {
+              // The state that has changed here is the animation object’s value.
+            });
+          });
+    controller.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+          child:
+              Center(child: Text(widget.word, style: TextStyle(fontSize: 30))),
+          decoration: BoxDecoration(
+            color: animation.value,
+          )),
+    );
   }
 }
