@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './assets/foreignword.dart';
+import 'package:provider/provider.dart';
 // import 'package:firebase_admob/firebase_admob.dart';
 
 // const String testDevice = "Mobile Id";
@@ -65,52 +66,55 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // @override
   // void initState() {
-  //   // TODO: implement initState
-  //   FirebaseAdMob.instance.initialize(appId: BannerAd.testAdUnitId);
+  //   // FirebaseAdMob.instance.initialize(appId: BannerAd.testAdUnitId);
   //   _bannerAd = createBannerAd()..load()..show();
+  //   super.initState();
   // }
 
   // @override
   // void dispose() {
-  //   // TODO: implement dispose
   //   _bannerAd.dispose();
+  //   super.dispose();
   // }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        title: Text(widget.title),
-        leading: IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.compare_arrows),
+    return ChangeNotifierProvider(
+      create: (context) => CorrectManager(),
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.white,
+          title: Text(widget.title),
+          leading: IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.compare_arrows),
+          ),
+          actions: <Widget>[
+            DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: langText,
+                style: TextStyle(color: Colors.black),
+                underline: null,
+                onChanged: (String newValue) {
+                  setState(() {
+                    currentLang = languagesSwitchFalse[newValue];
+                    langText = newValue;
+                  });
+                },
+                items: languagesStrings
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            )
+          ],
         ),
-        actions: <Widget>[
-          DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: langText,
-              style: TextStyle(color: Colors.black),
-              underline: null,
-              onChanged: (String newValue) {
-                setState(() {
-                  currentLang = languagesSwitchFalse[newValue];
-                  langText = newValue;
-                });
-              },
-              items: languagesStrings
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
-          )
-        ],
+        body: ForeignWord(lang: currentLang),
       ),
-      body: ForeignWord(lang: currentLang),
     );
   }
 }
