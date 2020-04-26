@@ -75,10 +75,10 @@ class _ForeignWordState extends State<ForeignWord> {
     final status = Provider.of<CorrectManager>(context);
     status.visibleWord = visWord;
     status.invisibleWord = invisWord;
-    
+
     return Column(
       children: <Widget>[
-        VisWordBox(word: status.visibleWord),
+        VisWordBox(),
         Expanded(
           child: Container(
             decoration: BoxDecoration(
@@ -94,25 +94,31 @@ class _ForeignWordState extends State<ForeignWord> {
 
 // Box where word is displayed
 
-class VisWordBox extends StatefulWidget {
-  final String word;
-  // final int isCorrect;
-  VisWordBox({this.word});
+// class VisWordBox extends StatefulWidget {
+//   final String word;
+//   // final int isCorrect;
+//   VisWordBox({this.word});
 
-  @override
-  _VisWordBoxState createState() => _VisWordBoxState();
-}
+//   @override
+//   _VisWordBoxState createState() => _VisWordBoxState();
+// }
 
-class _VisWordBoxState extends State<VisWordBox> {
-  List<Color> _colorsList = [Colors.orange, Colors.green, Colors.red];
+class VisWordBox extends StatelessWidget {
+  final List<Color> _colorsList = [Colors.orange, Colors.green, Colors.red];
 
   @override
   Widget build(BuildContext context) {
     final status = Provider.of<CorrectManager>(context);
+    final correctWord = status.invisibleWord;
     return Expanded(
       child: Container(
-          child:
-              Center(child: Text(widget.word, style: TextStyle(fontSize: 30))),
+          child: Center(
+              child: Stack(children: <Widget>[
+            Text(status.visibleWord,
+                style: TextStyle(fontSize: 30,),),
+            Text(correctWord,
+                style: TextStyle(fontSize: 30))
+          ])),
           decoration: BoxDecoration(color: _colorsList[status.state - 1])),
     );
   }
