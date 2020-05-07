@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import './languagedicts.dart';
 import 'dart:math';
 import 'package:provider/provider.dart';
+import 'dart:io';
 
 class CorrectManager extends ChangeNotifier {
   int _state = 1; // 1 = no change, 2 = correct, 3 = incorrect
   String _visibleWord;
   String _invisibleWord;
   String _userWord;
+  String _oldInvisibleWord;
 
   int get state => _state;
   String get visibleWord => _visibleWord;
   String get invisibleWord => _invisibleWord;
+  String get oldInvisibleWord => _invisibleWord;
   String get userWord => _userWord;
 
   set state(int newVal) {
@@ -31,6 +34,11 @@ class CorrectManager extends ChangeNotifier {
 
   set invisibleWord(String newWord) {
     _invisibleWord = newWord;
+    // notifyListeners();
+  }
+
+  set oldInvisibleWord(String newWord) {
+    _oldInvisibleWord = newWord;
     // notifyListeners();
   }
 
@@ -103,24 +111,106 @@ class _ForeignWordState extends State<ForeignWord> {
 //   _VisWordBoxState createState() => _VisWordBoxState();
 // }
 
-class VisWordBox extends StatelessWidget {
+class VisWordBox extends StatefulWidget {
+  @override
+  _VisWordBoxState createState() => _VisWordBoxState();
+}
+
+class _VisWordBoxState extends State<VisWordBox> with TickerProviderStateMixin {
   final List<Color> _colorsList = [Colors.orange, Colors.green, Colors.red];
+  Animation<Color> colorAnimation;
+  // Main = main word, secondary = word that fades in then out
+  Animation<double> mainOpacityAnimation;
+  Animation<double> secondaryOpacityAnimation;
+
+  AnimationController colorController;
+  AnimationController mainOpacityController;
+  AnimationController secondaryOpacityController;
+  int _sleepDuration = 1200;
+
+  void initState() {
+    super.initState();
+    colorController = AnimationController(
+        duration: Duration(milliseconds: _sleepDuration), vsync: this);
+
+    mainOpacityController = AnimationController(
+        duration: Duration(milliseconds: _sleepDuration), vsync: this);
+    secondaryOpacityController = AnimationController(
+        duration: Duration(milliseconds: _sleepDuration), vsync: this);
+
+    colorAnimation = ColorTween(begin: Colors.orange, end: Colors.green)
+        .animate(
+            colorController)
+          ..addListener(() {
+            setState(() {
+              // colorController.forward();
+            });
+          });
+
+    mainOpacityAnimation =
+        Tween(begin: 1.0, end: 0.0).animate(mainOpacityController)
+          ..addListener(() {
+            setState(() {
+              // mainOpacityController.forward();
+            });
+          });
+    secondaryOpacityAnimation =
+        Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: secondaryOpacityController, curve: Interval(0, 0.5)))
+          ..addListener(() {
+            setState(() {
+              // mainOpacityController.forward();
+            });
+          });
+  }
+
+  void animateGreen() {
+    colorController.forward();
+    mainOpacityController.forward();
+    secondaryOpacityController.forward();
+    Future.delayed(Duration(milliseconds: _sleepDuration), () {
+      colorController.reset();
+      mainOpacityController.reset();
+      secondaryOpacityController.reset();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final status = Provider.of<CorrectManager>(context);
-    final correctWord = status.invisibleWord;
+    final correctWord = status.oldInvisibleWord;
+
     return Expanded(
-      child: Container(
-          child: Center(
-              child: Stack(children: <Widget>[
-            Text(status.visibleWord,
-                style: TextStyle(fontSize: 30,),),
-            Text(correctWord,
-                style: TextStyle(fontSize: 30))
-          ])),
-          decoration: BoxDecoration(color: _colorsList[status.state - 1])),
-    );
+        child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Center(
+                    child: Stack(children: <Widget>[
+                  RaisedButton(
+                    onPressed: animateGreen,
+                  ),
+                  Opacity(
+                    opacity: mainOpacityAnimation.value,
+                    child: Text(
+                      status.visibleWord,
+                      style: TextStyle(
+                        fontSize: 30,
+                      ),
+                    ),
+                  ),
+                  Opacity(
+                    opacity: secondaryOpacityAnimation.value,
+                    child: Text(
+                      correctWord,
+                      style: TextStyle(
+                        fontSize: 30,
+                      ),
+                    ),
+                  ),
+                ])),
+              ],
+            ),
+            decoration: BoxDecoration(color: colorAnimation.value)));
   }
 }
 
@@ -164,10 +254,15 @@ class _ValidationFormState extends State<ValidationForm> {
                       Provider.of<CorrectManager>(context, listen: false);
                   if (_formKey.currentState.validate()) {
                     if (status.invisibleWord == status.userWord) {
+                      status.oldInvisibleWord = status.invisibleWord;
                       status.state = 2;
+                      // sleep(Duration(milliseconds: 500));
+                      // status.state = 1;
                       // print(status.state);
                     } else {
                       status.state = 3;
+                      // sleep(Duration(milliseconds: 500));
+                      // status.state = 1;
                     }
                   }
                 },
